@@ -1,3 +1,5 @@
+# Copyright Notice
+### License
 /*************************************************************************************
     Copyright (C) 2024 Nedelcu Bogdan Sebastian
     All the code here is free software: you can redistribute it and/or modify it 
