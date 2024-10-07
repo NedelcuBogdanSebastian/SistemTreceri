@@ -1,8 +1,11 @@
 
-/*
-    Use:
+/*    
+    This program generate sinusoidal signals with phase from 0..360 degrees,
+    adds noise, perform FFT, and compute phase for each one to verify if
+    the function are implemented correct.
+    
+    To compile and run the test, go to:
         https://www.onlinegdb.com/online_c_compiler#
-    to compile and run the test.
 */
 
 #include <stdio.h>
