@@ -10,7 +10,7 @@ The limit of the signals are between **2.678 mA** and **100 mA**.
 More explanations of the algorithms are in the **main.c** file.
 
 *(Note: The code runs on BluePill (STM32F103CBT6) and the IDE is the CooCox 1.7.8.
-        The compiler used is the  gcc-arm-none-eabi-5_4-2016q3-20160926-win32.exe.
+        The compiler used is the  gcc-arm-none-eabi-10.3-2021.10-win32.exe.
         Use external 23K256 SRAM memory to store all 6 signals at once!)*
 
 # TestFFTPhaseComputation
