@@ -54,7 +54,6 @@ void generate_flat_top_window(float *flattop_window, size_t num_points) {
     }
 }
 
-
 // Calculates the FFT phase at a given frequency index.
 // Input: data is complex FFT Re[V(0)],Im[V(0)], Re[V(1)],Im[V(1)],...
 // Input: nn is the number of points in the data and in the FFT,
@@ -245,7 +244,6 @@ int main() {
 
     // Generate Flattop Window coefficients and write to file
     generate_flat_top_window(flattop_window, num_points);
-
 
     while (signal_phase < 359.0) {
 
