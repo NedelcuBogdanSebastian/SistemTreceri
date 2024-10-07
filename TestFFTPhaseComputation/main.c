@@ -316,7 +316,7 @@ float signal_phase = 0;
 
 volatile uint32_t TimingDelay;
 
-// 	USB related
+//  USB related
 volatile uint8_t TestBuffer[27];
 extern volatile uint8_t Receive_Buffer[64];
 extern volatile uint32_t Receive_length ;
@@ -374,7 +374,7 @@ float myfftPhase (float data[], unsigned long nn, uint16_t k) {
     // Adjust phase based on phase difference between bin 9 an 50 Hz
     // ( Value is not equal to theory, like always :))) )
     //angle_deg = fmodf((angle_deg - 222.884444), 360.0);
-	
+
     // Normalize the angle to be in the range [0, 360)
     if (angle_deg < 0) {
         angle_deg += 360.0;
@@ -477,12 +477,12 @@ void real_fft (float data[], unsigned long nn) {
 
 // Adjust the phase to be an integer with `2 decimals` ( * 100)
 uint16_t adjust_phase(float phase, float phase_difference) {
-	// If phase difference it to big something is broken
-	if (phase_difference >= 359.0)  // THE DWT TICKS COUNTER HAS GONE WHILD ON US !!! :)
-		return 0;
+    // If phase difference it to big something is broken
+    if (phase_difference >= 359.0)  // THE DWT TICKS COUNTER HAS GONE WHILD ON US !!! :)
+        return 0;
 
-	// Subtract the small delay from the moment we had zero-cross impulse
-	// till the moment the ADC had first data ready (/DRA high)
+    // Subtract the small delay from the moment we had zero-cross impulse
+    // till the moment the ADC had first data ready (/DRA high)
     float adjusted_phase = phase - phase_difference;
 
     // Ensure the result is in the range [0, 360)
@@ -496,21 +496,21 @@ uint16_t adjust_phase(float phase, float phase_difference) {
 
 // Adjust the voltage so that we have current only in 0..100 mA
 uint16_t adjust_voltage (float voltage) {
-	uint16_t voltage_value = 0;
+    uint16_t voltage_value = 0;
 
     // Prevent negative values
-	if (voltage < 0)
-    	return 0;
+    if (voltage < 0)
+        return 0;
 
     // Scale by 10000 and convert to integer
-	// The ADC `sees` voltage up to 0.6V without degraded precision
-	voltage_value = (uint16_t)(voltage * 10000.0);
+    // The ADC `sees` voltage up to 0.6V without degraded precision
+    voltage_value = (uint16_t)(voltage * 10000.0);
 
-	// Top voltage at 100 mA (0.1 A * 5.6 OHM = 0.56 V * 10000.0 = 5600)
-	if (voltage_value > 5600)
-		return 5600;
+    // Top voltage at 100 mA (0.1 A * 5.6 OHM = 0.56 V * 10000.0 = 5600)
+    if (voltage_value > 5600)
+        return 5600;
 
-	return voltage_value;
+    return voltage_value;
 }
 
 // Generate sine wave of specific phase and amplitude, with added noise
@@ -592,30 +592,30 @@ void print2usb_int(uint32_t number) {
 }
 
 int main(void) {
-    GPIO_InitTypeDef GPIO_InitStructure;  
+    GPIO_InitTypeDef GPIO_InitStructure;
 
     /************************************************************
     *   Set the Vector Table base adress at 0x8004000
-    *************************************************************/      
-    NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x4000);    
-    
+    *************************************************************/
+    NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x4000);
+
     // Set systick 1ms
     if(SysTick_Config(72000))
-    { 
-        /* Capture error */ 
+    {
+        /* Capture error */
         while (1);
-    }   	
+    }
 
     /************************************************************
     *   init PB0 led
-    *************************************************************/    
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB , ENABLE); 	
+    *************************************************************/
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB , ENABLE);
     GPIO_StructInit(&GPIO_InitStructure);
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_0;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_Init(GPIOB, &GPIO_InitStructure);
-  
+
     /*************************************************************
     *   Init USB peripheral
     *************************************************************/
@@ -623,7 +623,7 @@ int main(void) {
     Set_USBClock();
     USB_Interrupts_Config();
     USB_Init();
-  
+
     Delay(3000);
 
     const uint16_t num_points = 2048;    // Number of points in the buffer
@@ -631,7 +631,7 @@ int main(void) {
     const float frequency = 50.0;        // Frequency in Hz
     const float sample_rate = 11718.75;  // Sample rate in Hz (calculated to get index 9)
     float signal_phase = 0.0;
-	float noise_aplitude = 0.002;
+    float noise_aplitude = 0.002;
 
     while (signal_phase < 360.0) {
         // Generate the sine wave
@@ -653,11 +653,11 @@ int main(void) {
         print2usb_int(p);
 
         // Toggle led
-		GPIOB->ODR ^= GPIO_Pin_0;
+        GPIOB->ODR ^= GPIO_Pin_0;
 
-		signal_phase += 2.5;
+        signal_phase += 2.5;
     }
-} 
+}
 
 /*
 // If we need to store signed values we use 2's complement
