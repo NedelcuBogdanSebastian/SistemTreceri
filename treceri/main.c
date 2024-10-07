@@ -67,7 +67,7 @@
  *    frequency (51.4984 Hz) it will be calculated and substracted from the phase.
  *
  *    The difference in angular frequency is:
- *        delta_phase = 2PI × (fbin - fsignal) = 2PI × (51.4984130859375 - 50) = 2PI × 1.4984130859375 = 9.4148 rad/s
+ *        delta_phase = 2PI Ã— (fbin - fsignal) = 2PI Ã— (51.4984130859375 - 50) = 2PI Ã— 1.4984130859375 = 9.4148 rad/s
  *
  *    The FFT gives us the phase at bin 9 for the frequency 51.4984 Hz, the signal at 50 Hz will
  *    have advanced by a phase difference during the length of the signal.
@@ -76,9 +76,9 @@
  *        T = num_points / sample_rate = 2048 / 11718.75 = 0.174762666 seconds
  *
  *    The total phase shift over this time T is:
- *        phase_difference = delta_phase × T = 9.4148 × 0.174762666 = 1.646 rad = 94.272°
+ *        phase_difference = delta_phase Ã— T = 9.4148 Ã— 0.174762666 = 1.646 rad = 94.272Â°
  *
- *    So, the phase at bin 9 is approximately 94.272° ahead of the true phase at 50 Hz.
+ *    So, the phase at bin 9 is approximately 94.272Â° ahead of the true phase at 50 Hz.
  *
  ********************************************************************/
 
