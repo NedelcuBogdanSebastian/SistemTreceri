@@ -27,7 +27,7 @@ def myfftPhase(fft_data, nn, k):
     # Convert the angle to degrees
     angle_deg = angle_rad * RAD2DEG
 
-    # Apply the specific adjustment you mentioned (-222.884444)
+    # Apply the adjustment
     angle_deg -= 222.884444
 
     # Normalize the angle to be in the range [0, 360)
@@ -73,7 +73,7 @@ def plot_sine_wave(filename):
     max_energy_index = np.argmax(energy)
     max_energy = energy[max_energy_index]
 
-    # Calculate phase using the translated myfftPhase function
+    # Calculate phase using Re Im from bin no 9
     phase_at_max_energy_deg = myfftPhase(fft_result, n, 9)
 
     # Clear the current figure for the next plot
