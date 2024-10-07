@@ -29,7 +29,7 @@ to further analyze them with Python if needed.
 
 # treceriTestPhaseComputing
 
-This project is made in Visual Studio Code. The compiler is **tdm64-gcc-10.3.0-2**.
+This project is made in **Visual Studio Code**. The compiler used is **tdm64-gcc-10.3.0-2**.
 
 In this example we have the following:
 
