@@ -10,7 +10,7 @@ The limit of the signals are between **2.678 mA** and **100 mA**.
 
 More explanations of the algorithms are in the **main.c** file.
 
-*(Note: The code runs on STM32F103CBT6 and the IDE is the good ol' CooCox. 
+*(Note: The code runs on STM32F103CBT6 and the IDE is the CooCox 1.7.8.
         The compiler used is the  gcc-arm-none-eabi-5_4-2016q3-20160926-win32.exe)*
 
 # 
