@@ -21,8 +21,8 @@ const int num_points = 2048;      // Number of points in the buffer
 const float rms_amplitude = 0.025;   // RMS amplitude in volts
 const float frequency = 50.0;        // Frequency in Hz
 const float sample_rate = 11718.75;  // Sample rate in Hz (calculated to get index 9)
-float signal_phase = 0.0;            // Signal phase
 const float noise_amplitude = 0.002; // Noise amplitude
+float signal_phase = 0.0;            // Signal phase
 
 // Flattop Window: If the purpose of the test focus more on the energy value of a
 // certain periodic signal frequency point. For example for Upeak, Upeak-peak, Urms,
