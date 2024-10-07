@@ -36,6 +36,7 @@ In this example we have the following:
     - we generate signals from 0 degrees to 359 degrees,
       of specific phase and with noise, and write the values to files named `sine_wave_x.x.txt`,
       with 1.0 degree step
+      
     - we generate the Flattop window and write coeffs to a file `flattop_window.txt`
     
     - we apply the window to the signal real side
