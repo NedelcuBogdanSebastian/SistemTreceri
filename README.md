@@ -1,8 +1,7 @@
 # Copyright Notice
 ### Licence
 Copyright (C) 2024 Nedelcu Bogdan Sebastian  
-This code is free software: you can redistribute it and/or modify it  
-under the following conditions:  
+This code is free software: you can redistribute it and/or modify it under the following conditions:  
 1. The use, distribution, and modification of this file are permitted for any purpose,  
    provided that the following conditions are met:  
 2. Any redistribution or modification of this file must retain the original copyright notice,  
