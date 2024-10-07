@@ -1,4 +1,3 @@
-
 /*    
     This program generate sinusoidal signals with phase from 0..360 degrees,
     adds noise, perform FFT, and compute phase for each one to verify if
@@ -17,6 +16,13 @@
 #define DEG2RAD   0.01745329251994329576923690768489
 #define RAD2DEG   57.295779513082320876798154814105  // 180/PI
 #define EPSILON   1e-8 // Small value for zero comparison
+
+const int num_points = 2048;      // Number of points in the buffer
+const float rms_amplitude = 0.025;   // RMS amplitude in volts
+const float frequency = 50.0;        // Frequency in Hz
+const float sample_rate = 11718.75;  // Sample rate in Hz (calculated to get index 9)
+float signal_phase = 0.0;            // Signal phase
+const float noise_amplitude = 0.002; // Noise amplitude
 
 // Flattop Window: If the purpose of the test focus more on the energy value of a
 // certain periodic signal frequency point. For example for Upeak, Upeak-peak, Urms,
@@ -234,14 +240,6 @@ void generate_hanning_window(float *window, size_t num_points) {
 }
 
 int main() {
-
-    const size_t num_points = 2048;      // Number of points in the buffer
-    const float rms_amplitude = 0.025;   // RMS amplitude in volts
-    const float frequency = 50.0;        // Frequency in Hz
-    const float sample_rate = 11718.75;  // Sample rate in Hz (calculated to get index 9)
-    float signal_phase = 0.0;
-    const float noise_amplitude = 0.002;
-
     float *flattop_window = (float *)malloc(num_points * sizeof(float)); // Allocate memory for the window
     float *signal = (float *)malloc(2 * num_points * sizeof(float)); // Allocate memory for the signal
 
