@@ -39,7 +39,7 @@ def get_signal_phase(x, y):
     tmp = (tmp - 222.884444) % 360.0 # delta not quite from theory    
     return tmp
 
-# Parameters from the user
+# Parameters
 num_points = 2048       # Number of points in the buffer
 rms_amplitude = 0.0025   # RMS amplitude in volts
 frequency = 50.0        # Frequency in Hz
