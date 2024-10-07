@@ -29,13 +29,13 @@ to further analyze them with Python if needed.
 
 # treceriTestPhaseComputing
 
-This project is made in Embarcadero Dev-C++ 6.3, on Windows 10.
+This project is made in Visual Studio Code. The compiler is **tdm64-gcc-10.3.0-2**.
 
 In this example we have the following:
 
     - we generate signals from 0 degrees to 359 degrees,
-      of speciffic phase and with noise, and write the values to files named `sine_wave_x.x.txt`
-      
+      of speciffic phase and with noise, and write the values to files named `sine_wave_x.x.txt`,
+      with 1.0 degree step
     - we generate the Flattop window and write coeffs to a file `flattop_window.txt`
     
     - we apply the window to the signal real side
