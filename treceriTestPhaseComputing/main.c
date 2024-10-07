@@ -404,7 +404,6 @@ void generate_hanning_window(float *window, size_t num_points) {
 }
 
 int main() {
-
     const size_t num_points = 2048;      // Number of points in the buffer
     const float rms_amplitude = 0.025;   // RMS amplitude in volts
     const float frequency = 50.0;        // Frequency in Hz
@@ -422,30 +421,27 @@ int main() {
     generate_flat_top_window(flattop_window, NUM_POINTS);
     
     
-while (signal_phase < 359.0) {
-    
-    // Create a file name that includes the signal phase
-    char filename[30];  // Adjust the size as needed
-    sprintf(filename, "sine_wave_%.1f.txt", signal_phase);
-    
-    // Generate the sine wave with phase and noise and write to file
-    generate_sine_wave(signal, num_points, rms_amplitude, frequency, sample_rate, signal_phase, noise_aplitude, filename);
-    
-    // Apply the Flattop window to the signal
-    apply_flattop_window(signal, flattop_window, num_points);
-    
-    // Compute FFT
-    real_fft(signal, 2048);
-    
-    float phase = myfftPhase(signal, 2048, 9);
-    
-    printf("Signal phase: %.4f, Computed phase %.4f\n", signal_phase, phase);
-    
-    signal_phase += 1.0; 
-}
-
-    
-    
+    while (signal_phase < 359.0) {
+        
+        // Create a file name that includes the signal phase
+        char filename[30];  // Adjust the size as needed
+        sprintf(filename, "sine_wave_%.1f.txt", signal_phase);
+        
+        // Generate the sine wave with phase and noise and write to file
+        generate_sine_wave(signal, num_points, rms_amplitude, frequency, sample_rate, signal_phase, noise_aplitude, filename);
+        
+        // Apply the Flattop window to the signal
+        apply_flattop_window(signal, flattop_window, num_points);
+        
+        // Compute FFT
+        real_fft(signal, 2048);
+        
+        float phase = myfftPhase(signal, 2048, 9);
+        
+        printf("Signal phase: %.4f, Computed phase %.4f\n", signal_phase, phase);
+        
+        signal_phase += 1.0; 
+    }
     
     // Free allocated memory
     free(signal);
