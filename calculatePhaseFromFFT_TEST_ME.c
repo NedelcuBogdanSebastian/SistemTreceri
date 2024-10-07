@@ -1,3 +1,20 @@
+/*************************************************************************************
+    Copyright (C) 2024 Nedelcu Bogdan Sebastian
+    This code is free software: you can redistribute it and/or modify it 
+    under the following conditions:
+    1. The use, distribution, and modification of this file are permitted for any 
+       purpose, provided that the following conditions are met:
+    2. Any redistribution or modification of this file must retain the original 
+       copyright notice, this list of conditions, and the following attribution:
+       "Original work by Nedelcu Bogdan Sebastian."
+    3. The original author provides no warranty regarding the functionality or fitness 
+       of this software for any particular purpose. Use it at your own risk.
+    By using this software, you agree to retain the name of the original author in any 
+    derivative works or distributions.
+    ------------------------------------------------------------------------
+    This code is provided as-is, without any express or implied warranties.
+**************************************************************************************/
+
 /*    
     This program generate sinusoidal signals with phase from 0..360 degrees,
     adds noise, perform FFT, and compute phase for each one to verify if
