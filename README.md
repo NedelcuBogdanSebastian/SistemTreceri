@@ -1,5 +1,5 @@
 # Copyright Notice
-
+### Licence
 Copyright (C) 2024 Nedelcu Bogdan Sebastian  
 This code is free software: you can redistribute it and/or modify it  
 under the following conditions:  
@@ -12,8 +12,7 @@ under the following conditions:
    fitness of this software for any particular purpose. Use it at your own risk.  
 By using this software, you agree to retain the name of the original author in  
 any derivative works or distributions.  
-------------------------------------------------------------------------  
-This code is provided as-is, without any express or implied warranties.  
+This code is provided as-is, without any express or implied warranties.
 
 # treceri
 This is the main project used to acquire leakage currents signals, 
