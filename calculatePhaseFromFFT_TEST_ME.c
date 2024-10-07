@@ -5,7 +5,7 @@
     
     To compile and run the test, go to:
         https://www.onlinegdb.com/online_c_compiler#
-    and copy paste run there :)    
+    and copy-paste-run there :)    
 */
 
 #include <stdio.h>
