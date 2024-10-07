@@ -1,5 +1,5 @@
 /*******************************************************************
- * 
+ *
  * Compute RMS voltage and phases of the signals.
  * Recompute after each Modbus interrogation.
  *
@@ -418,7 +418,7 @@ float phaseCH5 = 0;
 #define MOSI   GPIO_Pin_7  // Data in
 
 // ADC chipselect pin
-#define MCP3903_CS_low	  GPIO_ResetBits(GPIOA, SS)
+#define MCP3903_CS_low    GPIO_ResetBits(GPIOA, SS)
 #define MCP3903_CS_high   GPIO_SetBits(GPIOA, SS)
 
 // Zero cross signal input pin
@@ -471,7 +471,7 @@ void MCP3903_init(void);
 #define CS     GPIO_Pin_3
 
 // SRAM chipselect pin
-#define ENABLE_RAM	  GPIO_ResetBits(GPIOA, CS)
+#define ENABLE_RAM    GPIO_ResetBits(GPIOA, CS)
 #define DISABLE_RAM   GPIO_SetBits(GPIOA, CS)
 
 // Always do a &0xFF mask to assure we don't have sign problems
@@ -597,92 +597,92 @@ void apply_flattop_window(float *signal, const float *flattop_window, size_t num
 
 // Load to xyData buffer the selected signal from the SRAM memory
 void load_Channel_To_FFTbuffer (uint8_t channel) {
-	uint16_t i;
+    uint16_t i;
 
-	// Start reading from adress zero
+    // Start reading from adress zero
     ENABLE_RAM;
     SPISend(READ);
     SPISend(0x00);  // MSB
     SPISend(0x00);  // LSB
 
-	i = 0;
+    i = 0;
     while (i < 4096) {
-    	// Read all 6 channels at once from SRAM
-		MSB0 = SPISend(0xFF); LSB0 = SPISend(0xFF);
-		MSB1 = SPISend(0xFF); LSB1 = SPISend(0xFF);
-		MSB2 = SPISend(0xFF); LSB2 = SPISend(0xFF);
-		MSB3 = SPISend(0xFF); LSB3 = SPISend(0xFF);
-		MSB4 = SPISend(0xFF); LSB4 = SPISend(0xFF);
-		MSB5 = SPISend(0xFF); LSB5 = SPISend(0xFF);
+        // Read all 6 channels at once from SRAM
+        MSB0 = SPISend(0xFF); LSB0 = SPISend(0xFF);
+        MSB1 = SPISend(0xFF); LSB1 = SPISend(0xFF);
+        MSB2 = SPISend(0xFF); LSB2 = SPISend(0xFF);
+        MSB3 = SPISend(0xFF); LSB3 = SPISend(0xFF);
+        MSB4 = SPISend(0xFF); LSB4 = SPISend(0xFF);
+        MSB5 = SPISend(0xFF); LSB5 = SPISend(0xFF);
 
-		// We use MSB0 and LSB0 for every channel to conserve memory
-		switch (channel) {
-    	    //case 0:
-	        //    MSB0 = MSB0;  :)
-	        //    LSB0 = LSB0;
-	        //    break;
-		    case 1:
-		        MSB0 = MSB1;
-		        LSB0 = LSB1;
-		        break;
-		    case 2:
-		        MSB0 = MSB2;
-		        LSB0 = LSB2;
-		        break;
-		    case 3:
-		        MSB0 = MSB3;
-		        LSB0 = LSB3;
-		        break;
-		    case 4:
-		        MSB0 = MSB4;
-		        LSB0 = LSB4;
-		        break;
-		    case 5:
-		        MSB0 = MSB5;
-		        LSB0 = LSB5;
-		        break;
-		    default:
-		        // Optional: Handle invalid channel case if needed
-		        break;
-		}
+        // We use MSB0 and LSB0 for every channel to conserve memory
+        switch (channel) {
+            //case 0:
+            //    MSB0 = MSB0;  :)
+            //    LSB0 = LSB0;
+            //    break;
+            case 1:
+                MSB0 = MSB1;
+                LSB0 = LSB1;
+                break;
+            case 2:
+                MSB0 = MSB2;
+                LSB0 = LSB2;
+                break;
+            case 3:
+                MSB0 = MSB3;
+                LSB0 = LSB3;
+                break;
+            case 4:
+                MSB0 = MSB4;
+                LSB0 = LSB4;
+                break;
+            case 5:
+                MSB0 = MSB5;
+                LSB0 = LSB5;
+                break;
+            default:
+                // Optional: Handle invalid channel case if needed
+                break;
+        }
 
-		// Data is from 2 in 2, Re,Im, Re,Im,...
-		// Convert 16 bit ADC values to actual voltage
-		xyData[i] = ((float)((int16_t)((MSB0 << 8) | LSB0)) / 32767.0 / 3.0) * 2.39;  // ADC Vref = 2.39V
-		// The imaginary side is zero when we load the real signal
-		xyData[i + 1] = 0;
+        // Data is from 2 in 2, Re,Im, Re,Im,...
+        // Convert 16 bit ADC values to actual voltage
+        xyData[i] = ((float)((int16_t)((MSB0 << 8) | LSB0)) / 32767.0 / 3.0) * 2.39;  // ADC Vref = 2.39V
+        // The imaginary side is zero when we load the real signal
+        xyData[i + 1] = 0;
 
-		// Each time we load a channel to FFT buffer, we also find the MIN and MAX
-		// and update the global variables
-		switch (channel) {
-		    case 0:
-		        if (xyData[i] > maxCH0) maxCH0 = xyData[i];
-		        if (xyData[i] < minCH0) minCH0 = xyData[i];
-		        break;
-		    case 1:
-		        if (xyData[i] > maxCH1) maxCH1 = xyData[i];
-		        if (xyData[i] < minCH1) minCH1 = xyData[i];
-		        break;
-		    case 2:
-		        if (xyData[i] > maxCH2) maxCH2 = xyData[i];
-		        if (xyData[i] < minCH2) minCH2 = xyData[i];
-		        break;
-		    case 3:
-		        if (xyData[i] > maxCH3) maxCH3 = xyData[i];
-		        if (xyData[i] < minCH3) minCH3 = xyData[i];
-		        break;
-		    case 4:
-		        if (xyData[i] > maxCH4) maxCH4 = xyData[i];
-		        if (xyData[i] < minCH4) minCH4 = xyData[i];
-		        break;
-		    case 5:
-		        if (xyData[i] > maxCH5) maxCH5 = xyData[i];
-		        if (xyData[i] < minCH5) minCH5 = xyData[i];
-		        break;
-		    default:
-		        // Handle unexpected channel values if necessary
-		        break;
-		}
+        // Each time we load a channel to FFT buffer, we also find the MIN and MAX
+        // and update the global variables
+        switch (channel) {
+            case 0:
+                if (xyData[i] > maxCH0) maxCH0 = xyData[i];
+                if (xyData[i] < minCH0) minCH0 = xyData[i];
+                break;
+            case 1:
+                if (xyData[i] > maxCH1) maxCH1 = xyData[i];
+                if (xyData[i] < minCH1) minCH1 = xyData[i];
+                break;
+            case 2:
+                if (xyData[i] > maxCH2) maxCH2 = xyData[i];
+                if (xyData[i] < minCH2) minCH2 = xyData[i];
+                break;
+            case 3:
+                if (xyData[i] > maxCH3) maxCH3 = xyData[i];
+                if (xyData[i] < minCH3) minCH3 = xyData[i];
+                break;
+            case 4:
+                if (xyData[i] > maxCH4) maxCH4 = xyData[i];
+                if (xyData[i] < minCH4) minCH4 = xyData[i];
+                break;
+            case 5:
+                if (xyData[i] > maxCH5) maxCH5 = xyData[i];
+                if (xyData[i] < minCH5) minCH5 = xyData[i];
+                break;
+            default:
+                // Handle unexpected channel values if necessary
+                break;
+        }
 
         i += 2;
     }
@@ -776,12 +776,12 @@ void real_fft (float data[], unsigned long nn) {
 
 // Adjust the phase to be an integer with `2 decimals` ( * 100)
 uint16_t adjust_phase(float phase, float phase_difference) {
-	// If phase difference it to big something is broken
-	if (phase_difference >= 359.0)  // THE DWT TICKS COUNTER HAS GONE WHILD ON US !!! :)
-		return 0;
+    // If phase difference it to big something is broken
+    if (phase_difference >= 359.0)  // THE DWT TICKS COUNTER HAS GONE WHILD ON US !!! :)
+        return 0;
 
-	// Subtract the small delay from the moment we had zero-cross impulse
-	// till the moment the ADC had first data ready (/DRA high)
+    // Subtract the small delay from the moment we had zero-cross impulse
+    // till the moment the ADC had first data ready (/DRA high)
     float adjusted_phase = phase - phase_difference;
 
     // Ensure the result is in the range [0, 360)
@@ -795,21 +795,21 @@ uint16_t adjust_phase(float phase, float phase_difference) {
 
 // Adjust the voltage so that we have current only in 0..100 mA
 uint16_t adjust_voltage (float voltage) {
-	uint16_t voltage_value = 0;
+    uint16_t voltage_value = 0;
 
     // Prevent negative values
-	if (voltage < 0)
-    	return 0;
+    if (voltage < 0)
+        return 0;
 
     // Scale by 10000 and convert to integer
-	// The ADC `sees` voltage up to 0.6V without degraded precision
-	voltage_value = (uint16_t)(voltage * 10000.0);
+    // The ADC `sees` voltage up to 0.6V without degraded precision
+    voltage_value = (uint16_t)(voltage * 10000.0);
 
-	// Top voltage at 100 mA (0.1 A * 5.6 OHM = 0.56 V * 10000.0 = 5600)
-	if (voltage_value > 5600)
-		return 5600;
+    // Top voltage at 100 mA (0.1 A * 5.6 OHM = 0.56 V * 10000.0 = 5600)
+    if (voltage_value > 5600)
+        return 5600;
 
-	return voltage_value;
+    return voltage_value;
 }
 
 int main (void) {
@@ -956,271 +956,271 @@ int main (void) {
     *   Init Modbus
     *************************************************************/
     // Initialize protocol stack in RTU mode for a slave with address 8
-	// MB_RTU, Device ID: 1, USART portL: 1
+    // MB_RTU, Device ID: 1, USART portL: 1
     // (is configured in portserial.h, Baud rate: 19200, Parity: NONE)
     eMBInit(MB_RTU, 8, 1, 19200, MB_PAR_NONE);
-	// Enable the Modbus Protocol Stack.
+    // Enable the Modbus Protocol Stack.
     eMBEnable();
 
-	step_counter = 0;
+    step_counter = 0;
 
     TimingDelay = 0;
 
-	while (1) {
-		Modbus_End_Transmission_Flag = 0;
-		eMBPoll();
+    while (1) {
+        Modbus_End_Transmission_Flag = 0;
+        eMBPoll();
 
-		// Everything happends right after modbus ended the transmission of data
-		if (Modbus_End_Transmission_Flag == 1) {
-			// Update relays state on each modbus interogation
-			// B12  -  K1
-			// B9   -  K2
-			// B13  -  K3
-			// B8   -  K4
-			// B14  -  K5
-			// B7   -  K6 - WDH
-			// B15  -  K7 - WDS
-			// B6   -  K8 - WDA
-			// B0   -  switch high side (A,B,C)
-			// B1   -  switch low side (a,b,c)
+        // Everything happends right after modbus ended the transmission of data
+        if (Modbus_End_Transmission_Flag == 1) {
+            // Update relays state on each modbus interogation
+            // B12  -  K1
+            // B9   -  K2
+            // B13  -  K3
+            // B8   -  K4
+            // B14  -  K5
+            // B7   -  K6 - WDH
+            // B15  -  K7 - WDS
+            // B6   -  K8 - WDA
+            // B0   -  switch high side (A,B,C)
+            // B1   -  switch low side (a,b,c)
 
-			// Starts from 31 so in RMMS it will be from 30 holding register
-			if (readHoldingRegister(31) == 0) GPIOB->BSRR = GPIO_Pin_12;
-			else  GPIOB->BRR = GPIO_Pin_12;
-			if (readHoldingRegister(32) == 0) GPIOB->BSRR = GPIO_Pin_9;
-			else  GPIOB->BRR = GPIO_Pin_9;
-			if (readHoldingRegister(33) == 0) GPIOB->BSRR = GPIO_Pin_13;
-			else  GPIOB->BRR = GPIO_Pin_13;
-			if (readHoldingRegister(34) == 0) GPIOB->BSRR = GPIO_Pin_8;
-			else  GPIOB->BRR = GPIO_Pin_8;
-			if (readHoldingRegister(35) == 0) GPIOB->BSRR = GPIO_Pin_14;
-			else  GPIOB->BRR = GPIO_Pin_14;
-			if (readHoldingRegister(36) == 0) GPIOB->BSRR = GPIO_Pin_7;
-			else  GPIOB->BRR = GPIO_Pin_7;
-			if (readHoldingRegister(37) == 0) GPIOB->BSRR = GPIO_Pin_15;
-			else  GPIOB->BRR = GPIO_Pin_15;
-			if (readHoldingRegister(38) == 0) GPIOB->BSRR = GPIO_Pin_6;
-			else  GPIOB->BRR = GPIO_Pin_6;
+            // Starts from 31 so in RMMS it will be from 30 holding register
+            if (readHoldingRegister(31) == 0) GPIOB->BSRR = GPIO_Pin_12;
+            else  GPIOB->BRR = GPIO_Pin_12;
+            if (readHoldingRegister(32) == 0) GPIOB->BSRR = GPIO_Pin_9;
+            else  GPIOB->BRR = GPIO_Pin_9;
+            if (readHoldingRegister(33) == 0) GPIOB->BSRR = GPIO_Pin_13;
+            else  GPIOB->BRR = GPIO_Pin_13;
+            if (readHoldingRegister(34) == 0) GPIOB->BSRR = GPIO_Pin_8;
+            else  GPIOB->BRR = GPIO_Pin_8;
+            if (readHoldingRegister(35) == 0) GPIOB->BSRR = GPIO_Pin_14;
+            else  GPIOB->BRR = GPIO_Pin_14;
+            if (readHoldingRegister(36) == 0) GPIOB->BSRR = GPIO_Pin_7;
+            else  GPIOB->BRR = GPIO_Pin_7;
+            if (readHoldingRegister(37) == 0) GPIOB->BSRR = GPIO_Pin_15;
+            else  GPIOB->BRR = GPIO_Pin_15;
+            if (readHoldingRegister(38) == 0) GPIOB->BSRR = GPIO_Pin_6;
+            else  GPIOB->BRR = GPIO_Pin_6;
 
-			// Switch to HIGH side (B0)
-			if (readHoldingRegister(39) == 1) {
-				// Reset command register to prevent repeated execution
-				writeHoldingRegister(39, 0);
-				GPIOB->BSRR = GPIO_Pin_0;
-				// Small delay to ensure latching relays change state
-				Delay(100);
-				GPIOB->BRR = GPIO_Pin_0;
-			}
+            // Switch to HIGH side (B0)
+            if (readHoldingRegister(39) == 1) {
+                // Reset command register to prevent repeated execution
+                writeHoldingRegister(39, 0);
+                GPIOB->BSRR = GPIO_Pin_0;
+                // Small delay to ensure latching relays change state
+                Delay(100);
+                GPIOB->BRR = GPIO_Pin_0;
+            }
 
-			// Switch to LOW side (B1)
-			if (readHoldingRegister(40) == 1) {
-				// Reset command register to prevent repeated execution
-				writeHoldingRegister(40, 0);
-				GPIOB->BSRR = GPIO_Pin_1;
-				// Small delay to ensure latching relays change state
-				Delay(100);
-				GPIOB->BRR = GPIO_Pin_1;
-			}
+            // Switch to LOW side (B1)
+            if (readHoldingRegister(40) == 1) {
+                // Reset command register to prevent repeated execution
+                writeHoldingRegister(40, 0);
+                GPIOB->BSRR = GPIO_Pin_1;
+                // Small delay to ensure latching relays change state
+                Delay(100);
+                GPIOB->BRR = GPIO_Pin_1;
+            }
 
-			// STEP 0 ==== load data to SRAM
-			if (step_counter == 0) {
-				// Toggle LED
-				GPIOC->ODR ^= GPIO_Pin_13;
+            // STEP 0 ==== load data to SRAM
+            if (step_counter == 0) {
+                // Toggle LED
+                GPIOC->ODR ^= GPIO_Pin_13;
 
-				// Wait for zero cross trigger signal transition
-				WaitLoSIG;
-			    WaitHiSIG;
+                // Wait for zero cross trigger signal transition
+                WaitLoSIG;
+                WaitHiSIG;
 
-				flag = 0;
-				sample_counter = 0;
+                flag = 0;
+                sample_counter = 0;
 
-				// There is a small delay between the zero-cross impulse and the effective start of the
-				// acquisition, and because of the MCP3903 clock running slower than the Cortex core,
-				// we can measure and subtract this from phase to enhance accuracy :).
-				// We count this interval using DWT, in ticks (1tick = 13.8888888... ns)
+                // There is a small delay between the zero-cross impulse and the effective start of the
+                // acquisition, and because of the MCP3903 clock running slower than the Cortex core,
+                // we can measure and subtract this from phase to enhance accuracy :).
+                // We count this interval using DWT, in ticks (1tick = 13.8888888... ns)
                 // To convert from DWT ticks counter to seconds:
-				//     Time_in_seconds = DWTticks / 72000000
-				// The angle covered per second at 50 Hz is:
-				//     Degrees_per_second = 360 degrees per cycle x 50 cycles/second = 18000 degrees/second
+                //     Time_in_seconds = DWTticks / 72000000
+                // The angle covered per second at 50 Hz is:
+                //     Degrees_per_second = 360 degrees per cycle x 50 cycles/second = 18000 degrees/second
                 // So to convert DWT ticks to angle:
-				//     angle = (DWTticks / 72000000) * 18000 degrees/second
-				//           = DWTticks * 0.00025
-		// !!! START CRITICAL CODE !!!
-				*DWT_CYCCNT = 0;  // DWT resolution is 13.8888888... ns per clock tick
-				while (sample_counter < 2048) {
-					// Wait for ADC data ready pin low state
-					WaitLoDRA;
-					if (flag == 0) {  // Only once in the while :)
-						CPUTicks = *DWT_CYCCNT;  // Save how many ticks
-		// !!! END CRITICAL CODE !!!
-						flag = 1;
-					}
-					// Wait for ADC data ready pin high state
-					WaitHiDRA;
+                //     angle = (DWTticks / 72000000) * 18000 degrees/second
+                //           = DWTticks * 0.00025
+        // !!! START CRITICAL CODE !!!
+                *DWT_CYCCNT = 0;  // DWT resolution is 13.8888888... ns per clock tick
+                while (sample_counter < 2048) {
+                    // Wait for ADC data ready pin low state
+                    WaitLoDRA;
+                    if (flag == 0) {  // Only once in the while :)
+                        CPUTicks = *DWT_CYCCNT;  // Save how many ticks
+        // !!! END CRITICAL CODE !!!
+                        flag = 1;
+                    }
+                    // Wait for ADC data ready pin high state
+                    WaitHiDRA;
                     // Read data from ADC for all 6 channels
-					MCP3903_CS_low;
-					MSB0 = SPISend(0x41);
-					MSB0 = SPISend(0x00); LSB0 = SPISend(0x00);
-					MSB1 = SPISend(0x00); LSB1 = SPISend(0x00);
-					MSB2 = SPISend(0x00); LSB2 = SPISend(0x00);
-					MSB3 = SPISend(0x00); LSB3 = SPISend(0x00);
-					MSB4 = SPISend(0x00); LSB4 = SPISend(0x00);
-					MSB5 = SPISend(0x00); LSB5 = SPISend(0x00);
-					MCP3903_CS_high;
+                    MCP3903_CS_low;
+                    MSB0 = SPISend(0x41);
+                    MSB0 = SPISend(0x00); LSB0 = SPISend(0x00);
+                    MSB1 = SPISend(0x00); LSB1 = SPISend(0x00);
+                    MSB2 = SPISend(0x00); LSB2 = SPISend(0x00);
+                    MSB3 = SPISend(0x00); LSB3 = SPISend(0x00);
+                    MSB4 = SPISend(0x00); LSB4 = SPISend(0x00);
+                    MSB5 = SPISend(0x00); LSB5 = SPISend(0x00);
+                    MCP3903_CS_high;
                     // Store all 6 channels at once to SRAM
-					ENABLE_RAM;
-					SPISend(WRITE);
-					// We jump 12 by 12 bytes (6 x 16 bit values, for each MSB and LSB)
-					SPISend((char)((sample_counter * 12) >> 8));  // MSB  ((char)(address >> 8))
-					SPISend((char)(sample_counter * 12));  // LSB  ((char)address)
-					SPISend(MSB0); SPISend(LSB0);
-					SPISend(MSB1); SPISend(LSB1);
-					SPISend(MSB2); SPISend(LSB2);
-					SPISend(MSB3); SPISend(LSB3);
-					SPISend(MSB4); SPISend(LSB4);
-					SPISend(MSB5); SPISend(LSB5);
-					DISABLE_RAM;
+                    ENABLE_RAM;
+                    SPISend(WRITE);
+                    // We jump 12 by 12 bytes (6 x 16 bit values, for each MSB and LSB)
+                    SPISend((char)((sample_counter * 12) >> 8));  // MSB  ((char)(address >> 8))
+                    SPISend((char)(sample_counter * 12));  // LSB  ((char)address)
+                    SPISend(MSB0); SPISend(LSB0);
+                    SPISend(MSB1); SPISend(LSB1);
+                    SPISend(MSB2); SPISend(LSB2);
+                    SPISend(MSB3); SPISend(LSB3);
+                    SPISend(MSB4); SPISend(LSB4);
+                    SPISend(MSB5); SPISend(LSB5);
+                    DISABLE_RAM;
 
-					sample_counter++;
-				}
-			}
+                    sample_counter++;
+                }
+            }
 
             // MAX, MIN and PHASE for CH0, CH1, CH2
-			if (step_counter == 1)
-			{
-				// Compute MAX, MIN and fundamental phase for channel CH0
-				minCH0 = 1000.0;
-				maxCH0 = -1000.0;
-				// Load data to FFT buffer and get MAX and MIN for this channel
-				load_Channel_To_FFTbuffer(0);
-				RMSVoltageCH0 = (maxCH0 - minCH0) * 0.353;
-			    if (RMSVoltageCH0 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
-			    	// Apply Flat Top window to the signal
-			    	apply_flattop_window(xyData, flattop_window, 2048);
-			        // Compute FFT
-			        real_fft(xyData, 2048);
-			        // Compute fundamental phase
-			        phaseCH0 = myfftPhase(xyData, 2048, 9);
-			    } else {
-			    	phaseCH0 = 0.0;
-				}
+            if (step_counter == 1)
+            {
+                // Compute MAX, MIN and fundamental phase for channel CH0
+                minCH0 = 1000.0;
+                maxCH0 = -1000.0;
+                // Load data to FFT buffer and get MAX and MIN for this channel
+                load_Channel_To_FFTbuffer(0);
+                RMSVoltageCH0 = (maxCH0 - minCH0) * 0.353;
+                if (RMSVoltageCH0 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
+                    // Apply Flat Top window to the signal
+                    apply_flattop_window(xyData, flattop_window, 2048);
+                    // Compute FFT
+                    real_fft(xyData, 2048);
+                    // Compute fundamental phase
+                    phaseCH0 = myfftPhase(xyData, 2048, 9);
+                } else {
+                    phaseCH0 = 0.0;
+                }
 
-				// Compute MAX, MIN and fundamental phase for channel CH1
-				minCH1 = 1000.0;
-				maxCH1 = -1000.0;
-				// Load data to FFT buffer and get MAX and MIN for this channel
-				load_Channel_To_FFTbuffer(1);
-				RMSVoltageCH1 = (maxCH1 - minCH1) * 0.353;
-			    if (RMSVoltageCH1 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
-			    	// Apply Flat Top window to the signal
-			    	apply_flattop_window(xyData, flattop_window, 2048);
-					// Compute FFT
-					real_fft(xyData, 2048);
-					// Compute fundamental phase
-					phaseCH1 = myfftPhase(xyData, 2048, 9);
-				} else {
-					phaseCH1 = 0.0;
-				}
+                // Compute MAX, MIN and fundamental phase for channel CH1
+                minCH1 = 1000.0;
+                maxCH1 = -1000.0;
+                // Load data to FFT buffer and get MAX and MIN for this channel
+                load_Channel_To_FFTbuffer(1);
+                RMSVoltageCH1 = (maxCH1 - minCH1) * 0.353;
+                if (RMSVoltageCH1 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
+                    // Apply Flat Top window to the signal
+                    apply_flattop_window(xyData, flattop_window, 2048);
+                    // Compute FFT
+                    real_fft(xyData, 2048);
+                    // Compute fundamental phase
+                    phaseCH1 = myfftPhase(xyData, 2048, 9);
+                } else {
+                    phaseCH1 = 0.0;
+                }
 
-				// Compute MAX, MIN and fundamental phase for channel CH2
-				minCH2 = 1000.0;
-				maxCH2 = -1000.0;
-				// Load data to FFT buffer and get MAX and MIN for this channel
-				load_Channel_To_FFTbuffer(2);
-				RMSVoltageCH2 = (maxCH2 - minCH2) * 0.353;
-			    if (RMSVoltageCH2 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
-			    	// Apply Flat Top window to the signal
-			    	apply_flattop_window(xyData, flattop_window, 2048);
-			        // Compute FFT
-			        real_fft(xyData, 2048);
-			        // Compute fundamental phase
-			        phaseCH2 = myfftPhase(xyData, 2048, 9);
-			    } else {
-			    	phaseCH2 = 0.0;
-				}
-			}
+                // Compute MAX, MIN and fundamental phase for channel CH2
+                minCH2 = 1000.0;
+                maxCH2 = -1000.0;
+                // Load data to FFT buffer and get MAX and MIN for this channel
+                load_Channel_To_FFTbuffer(2);
+                RMSVoltageCH2 = (maxCH2 - minCH2) * 0.353;
+                if (RMSVoltageCH2 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
+                    // Apply Flat Top window to the signal
+                    apply_flattop_window(xyData, flattop_window, 2048);
+                    // Compute FFT
+                    real_fft(xyData, 2048);
+                    // Compute fundamental phase
+                    phaseCH2 = myfftPhase(xyData, 2048, 9);
+                } else {
+                    phaseCH2 = 0.0;
+                }
+            }
 
             // MAX, MIN and PHASE for CH3, CH4, CH5
-			if (step_counter == 2)
-			{
-				// Compute MAX, MIN and fundamental phase for channel CH3
-				minCH3 = 1000.0;
-				maxCH3 = -1000.0;
-				// Load data to FFT buffer and get MAX and MIN for this channel
-				load_Channel_To_FFTbuffer(3);
-				RMSVoltageCH3 = (maxCH3 - minCH3) * 0.353;
-			    if (RMSVoltageCH3 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
-			    	// Apply Flat Top window to the signal
-			    	apply_flattop_window(xyData, flattop_window, 2048);
-			        // Compute FFT
-			        real_fft(xyData, 2048);
-			        // Compute fundamental phase
-			        phaseCH3 = myfftPhase(xyData, 2048, 9);
-			    } else {
-			    	phaseCH3 = 0.0;
-				}
+            if (step_counter == 2)
+            {
+                // Compute MAX, MIN and fundamental phase for channel CH3
+                minCH3 = 1000.0;
+                maxCH3 = -1000.0;
+                // Load data to FFT buffer and get MAX and MIN for this channel
+                load_Channel_To_FFTbuffer(3);
+                RMSVoltageCH3 = (maxCH3 - minCH3) * 0.353;
+                if (RMSVoltageCH3 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
+                    // Apply Flat Top window to the signal
+                    apply_flattop_window(xyData, flattop_window, 2048);
+                    // Compute FFT
+                    real_fft(xyData, 2048);
+                    // Compute fundamental phase
+                    phaseCH3 = myfftPhase(xyData, 2048, 9);
+                } else {
+                    phaseCH3 = 0.0;
+                }
 
-				// Compute MAX, MIN and fundamental phase for channel CH4
-				minCH4 = 1000.0;
-				maxCH4 = -1000.0;
-				// Load data to FFT buffer and get MAX and MIN for this channel
-				load_Channel_To_FFTbuffer(4);
-				RMSVoltageCH4 = (maxCH4 - minCH4) * 0.353;
-			    if (RMSVoltageCH4 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
-			    	// Apply Flat Top window to the signal
-			    	apply_flattop_window(xyData, flattop_window, 2048);
-					// Compute FFT
-					real_fft(xyData, 2048);
-					// Compute fundamental phase
-					phaseCH4 = myfftPhase(xyData, 2048, 9);
-				} else {
-					phaseCH4 = 0.0;
-				}
+                // Compute MAX, MIN and fundamental phase for channel CH4
+                minCH4 = 1000.0;
+                maxCH4 = -1000.0;
+                // Load data to FFT buffer and get MAX and MIN for this channel
+                load_Channel_To_FFTbuffer(4);
+                RMSVoltageCH4 = (maxCH4 - minCH4) * 0.353;
+                if (RMSVoltageCH4 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
+                    // Apply Flat Top window to the signal
+                    apply_flattop_window(xyData, flattop_window, 2048);
+                    // Compute FFT
+                    real_fft(xyData, 2048);
+                    // Compute fundamental phase
+                    phaseCH4 = myfftPhase(xyData, 2048, 9);
+                } else {
+                    phaseCH4 = 0.0;
+                }
 
-				// Compute MAX, MIN and fundamental phase for channel CH5
-				minCH5 = 1000.0;
-				maxCH5 = -1000.0;
-				// Load data to FFT buffer and get MAX and MIN for this channel
-				load_Channel_To_FFTbuffer(5);
-				RMSVoltageCH5 = (maxCH5 - minCH5) * 0.353;
-			    if (RMSVoltageCH5 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
-			    	// Apply Flat Top window to the signal
-			    	apply_flattop_window(xyData, flattop_window, 2048);
-			        // Compute FFT
-			        real_fft(xyData, 2048);
-			        // Compute fundamental phase
-			        phaseCH5 = myfftPhase(xyData, 2048, 9);
-			    } else {
-			    	phaseCH5 = 0.0;
-				}
+                // Compute MAX, MIN and fundamental phase for channel CH5
+                minCH5 = 1000.0;
+                maxCH5 = -1000.0;
+                // Load data to FFT buffer and get MAX and MIN for this channel
+                load_Channel_To_FFTbuffer(5);
+                RMSVoltageCH5 = (maxCH5 - minCH5) * 0.353;
+                if (RMSVoltageCH5 > 0.015) {  // Equivalent to 2.678 mA on 5.6 ohm resistor (minimum value accepted)
+                    // Apply Flat Top window to the signal
+                    apply_flattop_window(xyData, flattop_window, 2048);
+                    // Compute FFT
+                    real_fft(xyData, 2048);
+                    // Compute fundamental phase
+                    phaseCH5 = myfftPhase(xyData, 2048, 9);
+                } else {
+                    phaseCH5 = 0.0;
+                }
 
-				// Save RMS voltage to Modbus server
-				writeHoldingRegister(1, adjust_voltage(RMSVoltageCH0));
-				writeHoldingRegister(2, adjust_voltage(RMSVoltageCH1));
-				writeHoldingRegister(3, adjust_voltage(RMSVoltageCH2));
-				writeHoldingRegister(4, adjust_voltage(RMSVoltageCH3));
-				writeHoldingRegister(5, adjust_voltage(RMSVoltageCH4));
-				writeHoldingRegister(6, adjust_voltage(RMSVoltageCH5));
+                // Save RMS voltage to Modbus server
+                writeHoldingRegister(1, adjust_voltage(RMSVoltageCH0));
+                writeHoldingRegister(2, adjust_voltage(RMSVoltageCH1));
+                writeHoldingRegister(3, adjust_voltage(RMSVoltageCH2));
+                writeHoldingRegister(4, adjust_voltage(RMSVoltageCH3));
+                writeHoldingRegister(5, adjust_voltage(RMSVoltageCH4));
+                writeHoldingRegister(6, adjust_voltage(RMSVoltageCH5));
 
-				// Convert DWT ticks to angle
-				float phase_difference = (float)(CPUTicks * 0.00025);
+                // Convert DWT ticks to angle
+                float phase_difference = (float)(CPUTicks * 0.00025);
 
-				// Write phase to modbus server
-				writeHoldingRegister( 7, adjust_phase(phaseCH0, phase_difference));
-				writeHoldingRegister( 8, adjust_phase(phaseCH1, phase_difference));
-				writeHoldingRegister( 9, adjust_phase(phaseCH2, phase_difference));
-				writeHoldingRegister(10, adjust_phase(phaseCH3, phase_difference));
-				writeHoldingRegister(11, adjust_phase(phaseCH4, phase_difference));
-				writeHoldingRegister(12, adjust_phase(phaseCH5, phase_difference));
-			}
+                // Write phase to modbus server
+                writeHoldingRegister( 7, adjust_phase(phaseCH0, phase_difference));
+                writeHoldingRegister( 8, adjust_phase(phaseCH1, phase_difference));
+                writeHoldingRegister( 9, adjust_phase(phaseCH2, phase_difference));
+                writeHoldingRegister(10, adjust_phase(phaseCH3, phase_difference));
+                writeHoldingRegister(11, adjust_phase(phaseCH4, phase_difference));
+                writeHoldingRegister(12, adjust_phase(phaseCH5, phase_difference));
+            }
 
-			step_counter++;
-			if (step_counter >= 3) {   // Reset state machine
-				step_counter = 0;
-				//GPIOC->ODR ^= GPIO_Pin_13;
-			}
+            step_counter++;
+            if (step_counter >= 3) {   // Reset state machine
+                step_counter = 0;
+                //GPIOC->ODR ^= GPIO_Pin_13;
+            }
 
-		}
+        }
     }
 }
 
@@ -1290,137 +1290,137 @@ uint8_t SPISend(uint8_t data) {
 }
 
 void MCP3903_init(void) {
-  	MCP3903_CS_low;
+    MCP3903_CS_low;
     SPISend(0x54);
     SPISend(0xFC);
     SPISend(0x0F);
     SPISend(0xD1);
-  	MCP3903_CS_high;
+    MCP3903_CS_high;
 
-  	MCP3903_CS_low;
+    MCP3903_CS_low;
     SPISend(0x50);
     SPISend(0x00);
     SPISend(0x00);
     SPISend(0x00);
-	MCP3903_CS_high;
+    MCP3903_CS_high;
 
-	MCP3903_CS_low;
+    MCP3903_CS_low;
     SPISend(0x4E);
     SPISend(0x00);
     SPISend(0x00);
     SPISend(0x00);
-	MCP3903_CS_high;
+    MCP3903_CS_high;
 
-	MCP3903_CS_low;
+    MCP3903_CS_low;
     SPISend(0x52);
     SPISend(0x80);
     SPISend(0x70);
     SPISend(0x00);
-	MCP3903_CS_high;
+    MCP3903_CS_high;
 
-	MCP3903_CS_low;
+    MCP3903_CS_low;
     SPISend(0x54);
     SPISend(0x00);
     SPISend(0x0F);
     SPISend(0xD1);
-	MCP3903_CS_high;
+    MCP3903_CS_high;
 
 /*
     SPI interface works in mode CPOL = 0 and CPHA = 0
 
-	INITIALIZATION RUTINE FOR MCP3903
-	=================================
-	CS_HIGH
-	CS_LOW
-		0x54, 0xFC, 0x0F, 0xD1   // 0x0A CONFIG
-	CS_HIGH
-	CS_LOW
-		0x50, 0x00, 0x00, 0x00   // 0x08 GAIN
-	CS_HIGH
-	CS_LOW
-		0x4E, 0x00, 0x00, 0x00   // 0x07 PHASE
-	CS_HIGH
-	CS_LOW
-		0x52, 0x80, 0x70, 0x00   // 0x09 STATUS/COM
-	CS_HIGH
-	CS_LOW
-		0x54, 0x00, 0x0F, 0xD1   // 0x0A CONFIG
-	CS_HIGH
-	#############################################
-	CONFIG      111111000000111111010001
-	GAIN        0
-	PHASE       0
-	STATUS/COM  100000000111000000000000
-	CONFIG      000000000000111111010001
-	#############################################
-	CONFIG
-	===============
-	RESET_CH5     1
-	RESET_CH4     1
-	RESET_CH3     1
-	RESET_CH2     1
-	RESET_CH1     1
-	RESET_CH0     1
-	---------------
-	SHUTDOWN_CH5  0
-	SHUTDOWN_CH4  0
-	SHUTDOWN_CH3  0
-	SHUTDOWN_CH2  0
-	SHUTDOWN_CH1  0
-	SHUTDOWN_CH0  0
-	---------------
-	DITHER_CH5    1
-	DITHER_CH4    1
-	DITHER_CH3    1
-	DITHER_CH2    1
-	DITHER_CH1    1
-	DITHER_CH0    1
-	---------------
-	OSR1,         0
-	OSR0          1
-	---------------
-	PRESCALE1,    0
-	PRESCALE0     0
-	---------------
-	EXTVREF       0
-	---------------
-	EXTCLK        1
-	#############################################
-	STATUS/COM
-	===============
-	READ1         1
-	READ0         0
-	---------------
-	WMODE         0
-	---------------
-	WIDTH_CH5     0
-	WIDTH_CH4     0
-	WIDTH_CH3     0
-	WIDTH_CH2     0
-	WIDTH_CH1     0
-	WIDTH_CH0     0
-	---------------
-	DR_LTY        1
-	---------------
-	DR_HIZ        1
-	---------------
-	DR_LINK       1
-	---------------
-	DRC_MODE1     0
-	DRC_MODE0     0
-	---------------
-	DRB_MODE1     0
-	DRB_MODE0     0
-	---------------
-	DRA_MODE1     0
-	DRA_MODE0     0
-	---------------
-	DRSTATUS_CH5  0
-	DRSTATUS_CH4  0
-	DRSTATUS_CH3  0
-	DRSTATUS_CH2  0
-	DRSTATUS_CH1  0
-	DRSTATUS_CH0  0
+    INITIALIZATION RUTINE FOR MCP3903
+    =================================
+    CS_HIGH
+    CS_LOW
+        0x54, 0xFC, 0x0F, 0xD1   // 0x0A CONFIG
+    CS_HIGH
+    CS_LOW
+        0x50, 0x00, 0x00, 0x00   // 0x08 GAIN
+    CS_HIGH
+    CS_LOW
+        0x4E, 0x00, 0x00, 0x00   // 0x07 PHASE
+    CS_HIGH
+    CS_LOW
+        0x52, 0x80, 0x70, 0x00   // 0x09 STATUS/COM
+    CS_HIGH
+    CS_LOW
+        0x54, 0x00, 0x0F, 0xD1   // 0x0A CONFIG
+    CS_HIGH
+    #############################################
+    CONFIG      111111000000111111010001
+    GAIN        0
+    PHASE       0
+    STATUS/COM  100000000111000000000000
+    CONFIG      000000000000111111010001
+    #############################################
+    CONFIG
+    ===============
+    RESET_CH5     1
+    RESET_CH4     1
+    RESET_CH3     1
+    RESET_CH2     1
+    RESET_CH1     1
+    RESET_CH0     1
+    ---------------
+    SHUTDOWN_CH5  0
+    SHUTDOWN_CH4  0
+    SHUTDOWN_CH3  0
+    SHUTDOWN_CH2  0
+    SHUTDOWN_CH1  0
+    SHUTDOWN_CH0  0
+    ---------------
+    DITHER_CH5    1
+    DITHER_CH4    1
+    DITHER_CH3    1
+    DITHER_CH2    1
+    DITHER_CH1    1
+    DITHER_CH0    1
+    ---------------
+    OSR1,         0
+    OSR0          1
+    ---------------
+    PRESCALE1,    0
+    PRESCALE0     0
+    ---------------
+    EXTVREF       0
+    ---------------
+    EXTCLK        1
+    #############################################
+    STATUS/COM
+    ===============
+    READ1         1
+    READ0         0
+    ---------------
+    WMODE         0
+    ---------------
+    WIDTH_CH5     0
+    WIDTH_CH4     0
+    WIDTH_CH3     0
+    WIDTH_CH2     0
+    WIDTH_CH1     0
+    WIDTH_CH0     0
+    ---------------
+    DR_LTY        1
+    ---------------
+    DR_HIZ        1
+    ---------------
+    DR_LINK       1
+    ---------------
+    DRC_MODE1     0
+    DRC_MODE0     0
+    ---------------
+    DRB_MODE1     0
+    DRB_MODE0     0
+    ---------------
+    DRA_MODE1     0
+    DRA_MODE0     0
+    ---------------
+    DRSTATUS_CH5  0
+    DRSTATUS_CH4  0
+    DRSTATUS_CH3  0
+    DRSTATUS_CH2  0
+    DRSTATUS_CH1  0
+    DRSTATUS_CH0  0
  */
 }
 
@@ -1436,53 +1436,53 @@ void fft (float data[], unsigned long nn) {
     double tempr,tempi;
 
     n = nn << 1;  // n is the size of data array (2*nn)
-	j = 1;
-	for (i=1; i<n; i+=2) {
-		if (j > i) {   // bit reversal section
-			SWAP(data[j-1], data[i-1]);
-			SWAP(data[j], data[i]);
-		}
+    j = 1;
+    for (i=1; i<n; i+=2) {
+        if (j > i) {   // bit reversal section
+            SWAP(data[j-1], data[i-1]);
+            SWAP(data[j], data[i]);
+        }
 
-		m = n >> 1;
+        m = n >> 1;
 
-		while ((m >= 2)&&(j > m)) {
-			j = j - m;
-			m = m >> 1;
-		}
+        while ((m >= 2)&&(j > m)) {
+            j = j - m;
+            m = m >> 1;
+        }
 
-		j = j + m;
-	}
+        j = j + m;
+    }
 
-	// Danielson-Lanczos section
-	mmax = 2;
-	while (n > mmax) {    // executed log2(nn) times
-		istep = mmax << 1;
-		theta = -6.283185307179586476925286766559 / mmax;
-		// the above line should be + for inverse FFT
-		wtemp = sin(0.5 * theta);
-		wpr = -2.0 * wtemp * wtemp;  // real part
-		wpi = sin(theta);        // imaginary part
-		wr = 1.0;
-		wi = 0.0;
+    // Danielson-Lanczos section
+    mmax = 2;
+    while (n > mmax) {    // executed log2(nn) times
+        istep = mmax << 1;
+        theta = -6.283185307179586476925286766559 / mmax;
+        // the above line should be + for inverse FFT
+        wtemp = sin(0.5 * theta);
+        wpr = -2.0 * wtemp * wtemp;  // real part
+        wpi = sin(theta);        // imaginary part
+        wr = 1.0;
+        wi = 0.0;
 
-		for (m=1; m<mmax; m+=2) {
-			for (i=m; i<=n; i=i+istep) {
-				j = i + mmax;
-				tempr     = wr * data[j-1] - wi * data[j]; // Danielson-Lanczos formula
-				tempi     = wr * data[j] + wi * data[j-1];
-				data[j-1] = data[i-1] - tempr;
-				data[j]   = data[i] - tempi;
-				data[i-1] = data[i-1] + tempr;
-				data[i]   = data[i] + tempi;
-			}
+        for (m=1; m<mmax; m+=2) {
+            for (i=m; i<=n; i=i+istep) {
+                j = i + mmax;
+                tempr     = wr * data[j-1] - wi * data[j]; // Danielson-Lanczos formula
+                tempi     = wr * data[j] + wi * data[j-1];
+                data[j-1] = data[i-1] - tempr;
+                data[j]   = data[i] - tempi;
+                data[i-1] = data[i-1] + tempr;
+                data[i]   = data[i] + tempi;
+            }
 
-			wtemp = wr;
-			wr = wr * wpr - wi * wpi + wr;
-			wi = wi * wpr + wtemp * wpi + wi;
-		}
+            wtemp = wr;
+            wr = wr * wpr - wi * wpi + wr;
+            wi = wi * wpr + wtemp * wpi + wi;
+        }
 
-		mmax = istep;
-	}
+        mmax = istep;
+    }
 }
  */
 
@@ -1490,13 +1490,13 @@ void fft (float data[], unsigned long nn) {
 // compute current using the rms of the voltage from 5.6ohm resistor
 // return value in mA with one decimals after quota
 uint16_t compute_current (float voltage) {
-	uint16_t current = (uint16_t)((voltage / 5.6) * 10000.0);
+    uint16_t current = (uint16_t)((voltage / 5.6) * 10000.0);
 
-	// Leakage current maximum at 100 mA (*10)
-	if (current < 0) current = 0;
-	if (current > 1000) current = 1000;
+    // Leakage current maximum at 100 mA (*10)
+    if (current < 0) current = 0;
+    if (current > 1000) current = 1000;
 
-	return (current);
+    return (current);
 }
  */
 
@@ -1576,109 +1576,109 @@ int32_t my_avg_func(void){
 */
 
 /*
-#define MAX_PRECISION	(10)
+#define MAX_PRECISION   (10)
 static const double rounders[MAX_PRECISION + 1] =
 {
-	0.5,				// 0
-	0.05,				// 1
-	0.005,				// 2
-	0.0005,				// 3
-	0.00005,			// 4
-	0.000005,			// 5
-	0.0000005,			// 6
-	0.00000005,			// 7
-	0.000000005,		// 8
-	0.0000000005,		// 9
-	0.00000000005		// 10
+    0.5,                // 0
+    0.05,               // 1
+    0.005,              // 2
+    0.0005,             // 3
+    0.00005,            // 4
+    0.000005,           // 5
+    0.0000005,          // 6
+    0.00000005,         // 7
+    0.000000005,        // 8
+    0.0000000005,       // 9
+    0.00000000005       // 10
 };
 
 char * ftoa(double f, char * buf, int precision)
 {
-	char * ptr = buf;
-	char * p = ptr;
-	char * p1;
-	char c;
-	long intPart;
+    char * ptr = buf;
+    char * p = ptr;
+    char * p1;
+    char c;
+    long intPart;
 
-	// check precision bounds
-	if (precision > MAX_PRECISION)
-		precision = MAX_PRECISION;
+    // check precision bounds
+    if (precision > MAX_PRECISION)
+        precision = MAX_PRECISION;
 
-	// sign stuff
-	if (f < 0)
-	{
-		f = -f;
-		*ptr++ = '-';
-	}
+    // sign stuff
+    if (f < 0)
+    {
+        f = -f;
+        *ptr++ = '-';
+    }
 
-	if (precision < 0)  // negative precision == automatic precision guess
-	{
-		if (f < 1.0) precision = 6;
-		else if (f < 10.0) precision = 5;
-		else if (f < 100.0) precision = 4;
-		else if (f < 1000.0) precision = 3;
-		else if (f < 10000.0) precision = 2;
-		else if (f < 100000.0) precision = 1;
-		else precision = 0;
-	}
+    if (precision < 0)  // negative precision == automatic precision guess
+    {
+        if (f < 1.0) precision = 6;
+        else if (f < 10.0) precision = 5;
+        else if (f < 100.0) precision = 4;
+        else if (f < 1000.0) precision = 3;
+        else if (f < 10000.0) precision = 2;
+        else if (f < 100000.0) precision = 1;
+        else precision = 0;
+    }
 
-	// round value according the precision
-	if (precision)
-		f += rounders[precision];
+    // round value according the precision
+    if (precision)
+        f += rounders[precision];
 
-	// integer part...
-	intPart = f;
-	f -= intPart;
+    // integer part...
+    intPart = f;
+    f -= intPart;
 
-	if (!intPart)
-		*ptr++ = '0';
-	else
-	{
-		// save start pointer
-		p = ptr;
+    if (!intPart)
+        *ptr++ = '0';
+    else
+    {
+        // save start pointer
+        p = ptr;
 
-		// convert (reverse order)
-		while (intPart)
-		{
-			*p++ = '0' + intPart % 10;
-			intPart /= 10;
-		}
+        // convert (reverse order)
+        while (intPart)
+        {
+            *p++ = '0' + intPart % 10;
+            intPart /= 10;
+        }
 
-		// save end pos
-		p1 = p;
+        // save end pos
+        p1 = p;
 
-		// reverse result
-		while (p > ptr)
-		{
-			c = *--p;
-			*p = *ptr;
-			*ptr++ = c;
-		}
+        // reverse result
+        while (p > ptr)
+        {
+            c = *--p;
+            *p = *ptr;
+            *ptr++ = c;
+        }
 
-		// restore end pos
-		ptr = p1;
-	}
+        // restore end pos
+        ptr = p1;
+    }
 
-	// decimal part
-	if (precision)
-	{
-		// place decimal point
-		*ptr++ = '.';
+    // decimal part
+    if (precision)
+    {
+        // place decimal point
+        *ptr++ = '.';
 
-		// convert
-		while (precision--)
-		{
-			f *= 10.0;
-			c = f;
-			*ptr++ = '0' + c;
-			f -= c;
-		}
-	}
+        // convert
+        while (precision--)
+        {
+            f *= 10.0;
+            c = f;
+            *ptr++ = '0' + c;
+            f -= c;
+        }
+    }
 
-	// terminating zero
-	*ptr = 0;
+    // terminating zero
+    *ptr = 0;
 
-	return buf;
+    return buf;
 }
 */
 
@@ -1869,20 +1869,20 @@ float fast_cosine(float x){
 /*
 uint16_t isqrt(uint32_t x)
 {
-	uint16_t res=0;
-	uint16_t add= 0x8000;
-	int i;
-	for(i=0;i<16;i++)
-	{
-		uint16_t temp=res | add;
-		uint32_t g2=temp*temp;
-		if (x>=g2)
-		{
-			res=temp;
-		}
-		add>>=1;
-	}
-	return res;
+    uint16_t res=0;
+    uint16_t add= 0x8000;
+    int i;
+    for(i=0;i<16;i++)
+    {
+        uint16_t temp=res | add;
+        uint32_t g2=temp*temp;
+        if (x>=g2)
+        {
+            res=temp;
+        }
+        add>>=1;
+    }
+    return res;
 }
 */
 
