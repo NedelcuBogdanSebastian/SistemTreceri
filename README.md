@@ -7,7 +7,7 @@ under the following conditions:
    purpose, provided that the following conditions are met:  
 2. Any redistribution or modification of this file must retain the original  
    copyright notice, this list of conditions, and the following attribution:  
-       **"Original work by Nedelcu Bogdan Sebastian."**   
+      **"Original work by Nedelcu Bogdan Sebastian."**   
 3. The original author provides no warranty regarding the functionality or  
    fitness of this software for any particular purpose. Use it at your own risk.  
 By using this software, you agree to retain the name of the original author in  
