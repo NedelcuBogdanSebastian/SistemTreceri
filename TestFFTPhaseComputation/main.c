@@ -1,3 +1,20 @@
+/*************************************************************************************
+    Copyright (C) 2024 Nedelcu Bogdan Sebastian
+    This code is free software: you can redistribute it and/or modify it 
+    under the following conditions:
+    1. The use, distribution, and modification of this file are permitted for any 
+       purpose, provided that the following conditions are met:
+    2. Any redistribution or modification of this file must retain the original 
+       copyright notice, this list of conditions, and the following attribution:
+       "Original work by Nedelcu Bogdan Sebastian."
+    3. The original author provides no warranty regarding the functionality or fitness 
+       of this software for any particular purpose. Use it at your own risk.
+    By using this software, you agree to retain the name of the original author in any 
+    derivative works or distributions.
+    ------------------------------------------------------------------------
+    This code is provided as-is, without any express or implied warranties.
+**************************************************************************************/
+
 /*
  * Here we generate sine waves with phases from 0 to 359 degrees.
  * We add noise to each signal and compute the phase angle from FFT.
@@ -599,7 +616,7 @@ int main(void) {
     *************************************************************/
     NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x4000);
 
-    // Set systick 1ms
+    // Set Systick to 1 ms interrupt (72 MHz clock)
     if(SysTick_Config(72000))
     {
         /* Capture error */
@@ -624,6 +641,7 @@ int main(void) {
     USB_Interrupts_Config();
     USB_Init();
 
+    // Small delay so the user can open the new COM port in Termite 
     Delay(3000);
 
     const uint16_t num_points = 2048;    // Number of points in the buffer
