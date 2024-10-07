@@ -67,6 +67,7 @@
        ϕcorrected = (ϕbin 9 − 94.272 + 360) % 360 => ϕcorrected = (ϕbin 9 + 265.728) % 360
 
 */
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -78,6 +79,13 @@
 
 #define NUM_POINTS 2048  // Number of points in the buffer
 #define VALUES_PER_LINE 8  // Number of values to print per line
+
+const size_t num_points = 2048;      // Number of points in the buffer
+const float rms_amplitude = 0.025;   // RMS amplitude in volts
+const float frequency = 50.0;        // Frequency in Hz
+const float sample_rate = 11718.75;  // Sample rate in Hz (calculated to get index 9)    
+const float noise_aplitude = 0.002;  // Noise level   
+float signal_phase = 0.0;            // Signal phase
 
 // Flattop Window: If the purpose of the test focus more on the energy value of a
 // certain periodic signal frequency point. For example for Upeak, Upeak-peak, Urms,
@@ -131,7 +139,6 @@ void generate_flat_top_window(float *flattop_window, size_t num_points) {
     // Close window coefficients file
     fclose(file);    
 }
-
 
 /*
 float myatan2(float y, float x) {
@@ -400,7 +407,6 @@ void generate_sine_wave(float *signal, size_t num_points, float rms_amplitude, f
     }
     
     fclose(file);
-
 }
 
 // Apply the Flat Top window to the signal
@@ -420,14 +426,6 @@ void generate_hanning_window(float *window, size_t num_points) {
 }
 
 int main() {
-
-    const size_t num_points = 2048;      // Number of points in the buffer
-    const float rms_amplitude = 0.025;   // RMS amplitude in volts
-    const float frequency = 50.0;        // Frequency in Hz
-    const float sample_rate = 11718.75;  // Sample rate in Hz (calculated to get index 9)
-    float signal_phase = 0.0;     
-	const float noise_aplitude = 0.002;     
-         
     float *flattop_window = (float *)malloc(NUM_POINTS * sizeof(float)); // Allocate memory for the window
     float *signal = (float *)malloc(2 * NUM_POINTS * sizeof(float)); // Allocate memory for the signal
 
@@ -437,32 +435,26 @@ int main() {
     // Generate Flattop Window coefficients and write to file
     generate_flat_top_window(flattop_window, NUM_POINTS);
     
+    while (signal_phase < 359.0) {
+        // Create a file name that includes the signal phase
+        char filename[30];  // Adjust the size as needed
+        sprintf(filename, "sine_wave_%.1f.txt", signal_phase);
     
-while (signal_phase < 359.0) {
+        // Generate the sine wave with phase and noise and write to file
+        generate_sine_wave(signal, num_points, rms_amplitude, frequency, sample_rate, signal_phase, noise_aplitude, filename);
     
-    // Create a file name that includes the signal phase
-    char filename[30];  // Adjust the size as needed
-    sprintf(filename, "sine_wave_%.1f.txt", signal_phase);
+        // Apply the Flattop window to the signal
+        apply_flattop_window(signal, flattop_window, num_points);
     
-    // Generate the sine wave with phase and noise and write to file
-    generate_sine_wave(signal, num_points, rms_amplitude, frequency, sample_rate, signal_phase, noise_aplitude, filename);
+        // Compute FFT
+        real_fft(signal, 2048);
     
-    // Apply the Flattop window to the signal
-    apply_flattop_window(signal, flattop_window, num_points);
+        float phase = myfftPhase(signal, 2048, 9);    
+        printf("Signal phase: %.4f, Computed phase %.4f\n", signal_phase, phase);
     
-    // Compute FFT
-    real_fft(signal, 2048);
-    
-    float phase = myfftPhase(signal, 2048, 9);
-    
-    printf("Signal phase: %.4f, Computed phase %.4f\n", signal_phase, phase);
-    
-    signal_phase += 1.0; 
-}
+        signal_phase += 1.0; 
+    }
 
-    
-    
-    
     // Free allocated memory
     free(signal);
     free(flattop_window);
