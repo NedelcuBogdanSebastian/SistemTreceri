@@ -258,7 +258,7 @@ int main() {
     // Generate Flattop Window coefficients and write to file
     generate_flat_top_window(flattop_window, num_points);
 
-    while (signal_phase < 359.0) {
+    while (signal_phase < 360.0) {
 
         // Generate the sine wave with phase and noise
         generate_sine_wave(signal, num_points, rms_amplitude, frequency, sample_rate, signal_phase, noise_amplitude);
