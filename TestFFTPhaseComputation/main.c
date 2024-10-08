@@ -381,22 +381,12 @@ float myfftPhase (float data[], unsigned long nn, uint16_t k) {
     // Convert the angle to degrees
     float angle_deg = angle_rad * RAD2DEG;
 
-    angle_deg -= 222.884444;
-
-    // Normalize the angle to be in the range [0, 360)
-    if (angle_deg < 0) {
+    angle_deg += 137.1126;
+    
+    if (angle_deg < 0.0) {
         angle_deg += 360.0;
     }
-
-    // Adjust phase based on phase difference between bin 9 an 50 Hz
-    // ( Value is not equal to theory, like always :))) )
-    //angle_deg = fmodf((angle_deg - 222.884444), 360.0);
-
-    // Normalize the angle to be in the range [0, 360)
-    if (angle_deg < 0) {
-        angle_deg += 360.0;
-    }
-
+    
     return angle_deg;
 }
 
