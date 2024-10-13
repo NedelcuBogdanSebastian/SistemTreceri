@@ -1,4 +1,4 @@
-![display](Images/SistemTreceri.jpg)
+![display](Images/SistemTreceri.png)
 # Copyright Notice
 ### Licence
 Copyright (C) 2024 Nedelcu Bogdan Sebastian  
